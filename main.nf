@@ -396,6 +396,7 @@ workflow pipeline {
         histograms = stats.hists
         flagstat = stats.flagstat
         readstats = stats.readstats
+        readdepth = readDepthPerRef.out | map { meta, depths, max_depth_and_locus -> [meta, depths] }
 }
 
 
@@ -471,6 +472,8 @@ workflow {
         | map { meta, readstats ->
             if (readstats) [readstats, "${meta.alias}.readstats.tsv.gz"]
         },
+        results.readdepth | map {meta, depthf -> 
++            if (depthf) [depthf, null]}
     )
     | publish
 }
